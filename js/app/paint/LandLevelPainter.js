@@ -24,7 +24,7 @@ define(['three', './BasePaint'], function(THREE, BasePaint){
             var plane = new THREE.Mesh(geometry, material);
             plane.translateX(offsetX);
             plane.translateY(offsetY);
-            plane.translateZ(0.2);
+            plane.translateZ(0.5);
             return plane;
         }
     });

@@ -8,7 +8,10 @@ var require = {
         threeCore: {exports: 'THREE'},
         FirstPersonControls: {deps: ['threeCore'], exports: 'THREE'},
         OrbitControls: {deps: ['threeCore'], exports: 'THREE'},
-        bootstrap: {deps: ['jquery']}
+        threePlugin: {deps: ['threeCore'], exports: 'THREE'},
+
+        bootstrap: {deps: ['jquery']},
+        when: {exports: 'when'}
     },
 
     paths: {
@@ -16,8 +19,11 @@ var require = {
         threeCore: 'three/three.min',
         FirstPersonControls: 'three/FirstPersonControls',
         OrbitControls: 'three/OrbitControls',
-        jquery: 'jquery',
-        vue: 'vue',
-        bootstrap: 'bootstrap.min'
+        threePlugin: 'three/threePlugin',
+
+        jquery: 'jquery.min',
+        vue: 'vue.min',
+        bootstrap: 'bootstrap.min',
+        when: 'when'
     }
 };

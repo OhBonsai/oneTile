@@ -4,6 +4,11 @@
 define([], function () {
     'use strict';
 
+    var isVectorClockWise = function(v1, v2){
+        var r = v1.x*v2.y - v1.y*v2.x;
+        return !!(r > 0 || 1 / r == Infinity);
+    };
+
     var isPointInPolygen = function (x, y, polyX, polyY) {
         var oddTransitions = false;
         var polySides = polyX.length;
@@ -19,7 +24,7 @@ define([], function () {
     };
 
 
-    var getPointInNormalDirection = function (x1, y1, x2, y2, BLength, polyX, polyY) {
+    var getPointInNormalDirection = function (x1, y1, x2, y2, BLength) {
         //     p2
         //     |\
         //     |b\
@@ -34,31 +39,40 @@ define([], function () {
         var slopeB = -1.0 / slopeA;
         var diffX = BLength * ( 1 / Math.sqrt(1 + slopeB * slopeB));
         var diffY = BLength * ( slopeB / Math.sqrt(1 + slopeB * slopeB));
-        
+
+        if (Math.abs(slopeB) == Infinity){
+            diffX = 0;
+            diffY = BLength;
+            if (slopeB < 0){
+                diffY = -BLength;
+            }
+        }
+
+        if (slopeB == 0){
+            diffY = 0;
+            diffX = BLength;
+            if (slopeB < 0){
+                diffX = -BLength;
+            }
+        }
+
+
         var posX = x1 + diffX;
         var posY = y1 + diffY;
         var negX = x1 - diffX;
         var negY = y1 - diffY;
-
-        if (!isPointInPolygen(posX, posY, polyX, polyY)) {
+        
+        if(! isVectorClockWise({x: diffX , y: diffY}, {x :x1, y: y1})){
             return {
                 outerX: posX, outerY: posY,
                 innerX: negX, innerY: negY
             }
-        } else {
-            if (isPointInPolygen(negX, negY, polyX, polyY)){
-                console.log('i can not believe it happens');
-                console.log(posX+','+posY+','+negX+','+negY);
-                console.log(polyX);
-                console.log(polyY);
-            }
+        }else{
             return {
                 outerX: negX, outerY: negY,
                 innerX: posX, innerY: posY
             }
         }
-        
-        
     };
 
 
@@ -130,20 +144,13 @@ define([], function () {
     return {
         convertShapePoint2Vertex: function (shapePointArray, roadWidth) {
             var distance = roadWidth / 2;
-            var polyX = [];
-            var polyY = [];
-
-            for (var i=0; i<shapePointArray.length; i+=2){
-                polyX.push(shapePointArray[i]);
-                polyY.push(shapePointArray[i+1]);
-            }
 
             var roadVerPosArr = [];
             var roadVerNegArr = [];
 
             // first point
             var firstPointVertex = getPointInNormalDirection(shapePointArray[0], shapePointArray[1],
-                shapePointArray[2], shapePointArray[3], distance, polyX, polyY);
+                shapePointArray[2], shapePointArray[3], distance);
 
             roadVerPosArr.push(firstPointVertex.outerX);
             roadVerPosArr.push(firstPointVertex.outerY);
@@ -153,19 +160,19 @@ define([], function () {
             // point neither first nor last
             for (var i = 2; i < shapePointArray.length - 2; i += 2) {
                 var priorSegmentVertex = getPointInNormalDirection(shapePointArray[i], shapePointArray[i + 1],
-                    shapePointArray[i - 2], shapePointArray[i - 1], distance, polyX, polyY);
+                    shapePointArray[i - 2], shapePointArray[i - 1], distance);
                 var secondarySegmentVertex = getPointInNormalDirection(shapePointArray[i], shapePointArray[i + 1],
-                    shapePointArray[i + 2], shapePointArray[i + 3], distance, polyX, polyY);
+                    shapePointArray[i + 2], shapePointArray[i + 3], distance);
 
                 var posVertex = getTwoLineNormalIntersection(
                     priorSegmentVertex.outerX, priorSegmentVertex.outerY,
                     shapePointArray[i], shapePointArray[i + 1],
-                    secondarySegmentVertex.outerX, secondarySegmentVertex.outerY);
+                    secondarySegmentVertex.innerX, secondarySegmentVertex.innerY);
 
                 var negVertex = getTwoLineNormalIntersection(
                     priorSegmentVertex.innerX, priorSegmentVertex.innerY,
                     shapePointArray[i], shapePointArray[i + 1],
-                    secondarySegmentVertex.innerX, secondarySegmentVertex.innerY);
+                    secondarySegmentVertex.outerX, secondarySegmentVertex.outerY);
 
                 roadVerPosArr.push(posVertex.x);
                 roadVerPosArr.push(posVertex.y);
@@ -178,14 +185,14 @@ define([], function () {
                 shapePointArray[shapePointArray.length - 1],
                 shapePointArray[shapePointArray.length - 4],
                 shapePointArray[shapePointArray.length - 3],
-                distance, polyX, polyY);
+                distance);
 
-            roadVerPosArr.push(endVertexPoints.outerX);
-            roadVerPosArr.push(endVertexPoints.outerY);
-            roadVerNegArr.push(endVertexPoints.innerX);
-            roadVerNegArr.push(endVertexPoints.innerY);
+            roadVerNegArr.push(endVertexPoints.outerX);
+            roadVerNegArr.push(endVertexPoints.outerY);
+            roadVerPosArr.push(endVertexPoints.innerX);
+            roadVerPosArr.push(endVertexPoints.innerY);
 
-            for (var i = roadVerNegArr.length - 2; i >= 0; i -= 2) {
+            for (i = roadVerNegArr.length - 2; i >= 0; i -= 2) {
                 roadVerPosArr.push(roadVerNegArr[i]);
                 roadVerPosArr.push(roadVerNegArr[i + 1]);
             }
