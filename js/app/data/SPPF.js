@@ -9,6 +9,7 @@ define(['when', 'jquery'], function(when, $){
     ShapePointPromiseFactory.prototype.createPromise = function(x, y){
         var defered = when.defer();
         var url = 'http://192.168.10.13:8989/draw/CHN/X/Y'.replace('X', x).replace('Y', y);
+        url = 'js/app/data/oneTile.json';
         $.getJSON(url, function(data){
             defered.resolve(data.link_shape_points);
         });
