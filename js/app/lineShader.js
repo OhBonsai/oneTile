@@ -1,7 +1,7 @@
 /**
  * Created by Bonsai on 16-8-26.
  */
-define( ["three", "../app/camera"], function( THREE, camera) {
+define( ["three"], function( THREE) {
     'use strict';
 
     var lineShader = new THREE.ShaderPass(THREE.ThickLineShader);
