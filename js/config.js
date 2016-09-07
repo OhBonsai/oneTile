@@ -11,7 +11,8 @@ var require = {
         threePlugin: {deps: ['threeCore'], exports: 'THREE'},
 
         bootstrap: {deps: ['jquery']},
-        when: {exports: 'when'}
+        when: {exports: 'when'},
+        dat: {exports: 'dat'}
     },
 
     paths: {
@@ -22,6 +23,7 @@ var require = {
         threePlugin: 'three/threePlugin',
 
         glm: 'gl-matrix-min',
+        dat: 'dat.gui.min',
 
         jquery: 'jquery.min',
         vue: 'vue.min',

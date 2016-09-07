@@ -12,6 +12,7 @@ define(['./paint/SeaLevelPainter',
         '../app/scene',
         '../app/clock',
         './container',
+        'dat',
         'three',
         'jquery'],
 function(SeaLevelPainter,
@@ -25,14 +26,18 @@ function(SeaLevelPainter,
          scene,
          clock,
          container,
+         dat,
          THREE,
          $){
     'use strict';
+
     var mat = new THREE.ShaderMaterial(LineShader({
         side: THREE.DoubleSide,
         diffuse: 0x5cd7ff,
         thickness: 20
     }));
+
+
 
     var time = 0.0;
 
@@ -43,6 +48,10 @@ function(SeaLevelPainter,
             scene.add(slp.draw());
             scene.add(llp.draw());
 
+            var gui = new dat.GUI({
+                height : 5 * 32 - 1
+            });
+
             var tileGroup = new THREE.Object3D();
             scene.add(tileGroup);
             var oneTileShapePointsPromise = ShapePointPromiseFactory.createPromise(13494, 6866);
@@ -50,26 +59,29 @@ function(SeaLevelPainter,
             oneTileShapePointsPromise.then(function(shapePoints){
                 $.each(shapePoints,function(linkId, linkShapePoints){
                     var geo = new THREE.Geometry();
+                    var shapePath = [];
                     for (var i=0; i<linkShapePoints.length; i+=2){
-                        geo.vertices.push(new THREE.Vector3(
+                        shapePath.push([
                             linkShapePoints[i]*2000/4096,
-                            linkShapePoints[i+1]*2000/4096, 2.0));
+                            linkShapePoints[i+1]*2000/4096
+                        ]);
                     }
-                    tileGroup.add(new THREE.Line(geo, material));
+
+                    // print something
+                    var printStr = '[';
+                    $.each(shapePath, function(idx, obj){
+                       printStr = printStr + '[' +(obj[0]/200.0)+','+(obj[1]/200.0)+ ']'+','
+                    });
+                    console.log(printStr+']');
+
+
+                    var linkGeo = LineGeometry(shapePath, {distances: false, closed: false});
+                    tileGroup.add(new THREE.Mesh(linkGeo, mat));
                 });
             });
 
             tileGroup.translateX(-1000);
             tileGroup.translateY(-1000);
-
-
-            //test basic shader
-
-            var boxPath = [[-250, -250], [-250, 250], [250, 250], [250, -250]];
-            var boxGeo = LineGeometry(boxPath, {distances: false, closed: true});
-            var mesh = new THREE.Mesh(boxGeo, mat);
-            scene.add(mesh);
-
         },
 
         animate: function(){
@@ -77,8 +89,6 @@ function(SeaLevelPainter,
             control.update();
             time += clock.getDelta();
             mat.uniforms.thickness.value = Math.sin(time) * 20;
-
-
             renderer.render(scene, camera);
         }
         
