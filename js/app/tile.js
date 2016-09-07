@@ -3,29 +3,38 @@
  */
 define(['./paint/SeaLevelPainter',
         './paint/LandLevelPainter',
+        './paint/LineGeometry',
+        './shader/LineShader',
         './data/SPPF',
         '../app/camera',
         '../app/control',
         '../app/renderer',
         '../app/scene',
-        '../app/composer',
-        '../app/lineShader',
+        '../app/clock',
         './container',
         'three',
         'jquery'],
 function(SeaLevelPainter,
          LandLevelPainter,
+         LineGeometry,
+         LineShader,
          ShapePointPromiseFactory,
          camera,
          control,
          renderer,
          scene,
-         composer,
-         lineShader,
+         clock,
          container,
          THREE,
          $){
     'use strict';
+    var mat = new THREE.ShaderMaterial(LineShader({
+        side: THREE.DoubleSide,
+        diffuse: 0x5cd7ff,
+        thickness: 20
+    }));
+
+    var time = 0.0;
 
     var tile = {
         init: function(){
@@ -52,12 +61,25 @@ function(SeaLevelPainter,
 
             tileGroup.translateX(-1000);
             tileGroup.translateY(-1000);
+
+
+            //test basic shader
+
+            var boxPath = [[-250, -250], [-250, 250], [250, 250], [250, -250]];
+            var boxGeo = LineGeometry(boxPath, {distances: false, closed: true});
+            var mesh = new THREE.Mesh(boxGeo, mat);
+            scene.add(mesh);
+
         },
 
         animate: function(){
             window.requestAnimationFrame( tile.animate );
             control.update();
-            composer.render();
+            time += clock.getDelta();
+            mat.uniforms.thickness.value = Math.sin(time) * 20;
+
+
+            renderer.render(scene, camera);
         }
         
     };

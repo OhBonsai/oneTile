@@ -1,204 +1,105 @@
 /**
  * Created by Bonsai on 16-8-23.
  */
-define([], function () {
+define(['glm'], function (glm) {
     'use strict';
 
-    var isVectorClockWise = function(v1, v2){
-        var r = v1.x*v2.y - v1.y*v2.x;
-        return !!(r > 0 || 1 / r == Infinity);
-    };
+    var v2 = glm.vec2;
+    var tmp = [0, 0];
+    var lineA = [0, 0];
+    var lineB = [0, 0];
+    var tangent = [0, 0];
+    var miter = [0, 0];
 
-    var isPointInPolygen = function (x, y, polyX, polyY) {
-        var oddTransitions = false;
-        var polySides = polyX.length;
+    function computeMiter(tangent, miter, lineA, lineB, halfThick){
+        // get tangent line
+        v2.add(tangent, lineA, lineB);
+        v2.normalize(tangent, tangent);
 
-        for (var i = 0, j = polySides - 1; i < polySides; j = i++) {
-            if (( polyY[i] < y && polyY[j] >= y ) || ( polyY[j] < y && polyY[i] >= y )) {
-                if (polyX[i] + ( y - polyY[i] ) / ( polyY[j] - polyY[i] ) * ( polyX[j] - polyX[i] ) < x) {
-                    oddTransitions = !oddTransitions;
-                }
-            }
-        }
-        return oddTransitions;
-    };
+        // get miter as a unit vector
+        v2.set(miter, -tangent[1], tangent[0]);
+        v2.set(tmp, -lineA[1], lineA[0]);
 
+        // get the necessary length of our miter
+        return halfThick / v2.dot(miter, tmp)
+    }
 
-    var getPointInNormalDirection = function (x1, y1, x2, y2, BLength) {
-        //     p2
-        //     |\
-        //     |b\
-        //     |  \
-        //    A|   \C
-        //     |    \
-        //     |c___a\
-        //    p1  B   p3
-        //    p1,p1 is our shape point
-        //    B is half of road width
-        var slopeA = (y2 - y1) / (x2 - x1);
-        var slopeB = -1.0 / slopeA;
-        var diffX = BLength * ( 1 / Math.sqrt(1 + slopeB * slopeB));
-        var diffY = BLength * ( slopeB / Math.sqrt(1 + slopeB * slopeB));
+    function normal(out, dir) {
+        // get perpendicular
+        v2.set(out, -dir[1], dir[0]);
+        return out
+    }
 
-        if (Math.abs(slopeB) == Infinity){
-            diffX = 0;
-            diffY = BLength;
-            if (slopeB < 0){
-                diffY = -BLength;
-            }
-        }
+    function direction(out, a, b) {
+        // get unit dir of two lines
+        v2.subtract(out, a, b);
+        v2.normalize(out, out);
+        return out
+    }
 
-        if (slopeB == 0){
-            diffY = 0;
-            diffX = BLength;
-            if (slopeB < 0){
-                diffX = -BLength;
-            }
-        }
-
-
-        var posX = x1 + diffX;
-        var posY = y1 + diffY;
-        var negX = x1 - diffX;
-        var negY = y1 - diffY;
-        
-        if(! isVectorClockWise({x: diffX , y: diffY}, {x :x1, y: y1})){
-            return {
-                outerX: posX, outerY: posY,
-                innerX: negX, innerY: negY
-            }
-        }else{
-            return {
-                outerX: negX, outerY: negY,
-                innerX: posX, innerY: posY
-            }
-        }
-    };
-
-
-    var checkLineIntersection = function (line1StartX, line1StartY, line1EndX, line1EndY, line2StartX, line2StartY, line2EndX, line2EndY) {
-        var denominator, a, b, numerator1, result = {
-            x: null,
-            y: null
-        };
-
-        denominator = ((line2EndY - line2StartY) * (line1EndX - line1StartX)) -
-            ((line2EndX - line2StartX) * (line1EndY - line1StartY));
-        if (denominator == 0) {
-            return result;
-        }
-        a = line1StartY - line2StartY;
-        b = line1StartX - line2StartX;
-
-        numerator1 = ((line2EndX - line2StartX) * a) - ((line2EndY - line2StartY) * b);
-        a = numerator1 / denominator;
-
-        result.x = line1StartX + (a * (line1EndX - line1StartX));
-        result.y = line1StartY + (a * (line1EndY - line1StartY));
-
-        return result;
-    };
-
-
-    var getTwoLineNormalIntersection = function (xs, ys, xm, ym, xe, ye) {
-        var slopeNormal01 = (xs - xm) / (ym - ys);
-        var slopeNormal12 = (xe - xm) / (ym - ye);
-
-
-        if (slopeNormal01 == slopeNormal12) {
-            return {x: xs, y: ys}
-        }
-
-        //  normal line - x axis intersection
-        var x1 = xs;
-        var y1 = ys;
-        var x2 = 0;
-        var y2 = ys - slopeNormal01 * xs;
-        var x3 = xe;
-        var y3 = ye;
-        var x4 = 0;
-        var y4 = ye - slopeNormal12 * xe;
-
-        if (slopeNormal01 == 0) {
-            x2 = x1 / 2 + 1;
-            y2 = y1;
-        }
-        if (slopeNormal12 == 0) {
-            x4 = x3 / 2 + 1;
-            y4 = y3;
-        }
-        if (Math.abs(slopeNormal01) == Infinity) {
-            x2 = x1;
-            y2 = y1 / 2 + 1;
-        }
-        if (Math.abs(slopeNormal12) == Infinity) {
-            x4 = x3;
-            y4 = y3 / 2 + 1;
-        }
-
-        return checkLineIntersection(x1, y1, x2, y2, x3, y3, x4, y4)
-
-    };
+    function addNext(out, normal, length) {
+        out.push([[normal[0], normal[1]], length]);
+    }
 
 
     return {
-        convertShapePoint2Vertex: function (shapePointArray, roadWidth) {
-            var distance = roadWidth / 2;
-
-            var roadVerPosArr = [];
-            var roadVerNegArr = [];
-
-            // first point
-            var firstPointVertex = getPointInNormalDirection(shapePointArray[0], shapePointArray[1],
-                shapePointArray[2], shapePointArray[3], distance);
-
-            roadVerPosArr.push(firstPointVertex.outerX);
-            roadVerPosArr.push(firstPointVertex.outerY);
-            roadVerNegArr.push(firstPointVertex.innerX);
-            roadVerNegArr.push(firstPointVertex.innerY);
-
-            // point neither first nor last
-            for (var i = 2; i < shapePointArray.length - 2; i += 2) {
-                var priorSegmentVertex = getPointInNormalDirection(shapePointArray[i], shapePointArray[i + 1],
-                    shapePointArray[i - 2], shapePointArray[i - 1], distance);
-                var secondarySegmentVertex = getPointInNormalDirection(shapePointArray[i], shapePointArray[i + 1],
-                    shapePointArray[i + 2], shapePointArray[i + 3], distance);
-
-                var posVertex = getTwoLineNormalIntersection(
-                    priorSegmentVertex.outerX, priorSegmentVertex.outerY,
-                    shapePointArray[i], shapePointArray[i + 1],
-                    secondarySegmentVertex.innerX, secondarySegmentVertex.innerY);
-
-                var negVertex = getTwoLineNormalIntersection(
-                    priorSegmentVertex.innerX, priorSegmentVertex.innerY,
-                    shapePointArray[i], shapePointArray[i + 1],
-                    secondarySegmentVertex.outerX, secondarySegmentVertex.outerY);
-
-                roadVerPosArr.push(posVertex.x);
-                roadVerPosArr.push(posVertex.y);
-                roadVerNegArr.push(negVertex.x);
-                roadVerNegArr.push(negVertex.y);
+        getNormals : function(points, closed){
+            var curNormal = null;
+            var out = [];
+            if (closed) {
+                points = points.slice();
+                points.push(points[0]);
             }
 
-            // last point
-            var endVertexPoints = getPointInNormalDirection(shapePointArray[shapePointArray.length - 2],
-                shapePointArray[shapePointArray.length - 1],
-                shapePointArray[shapePointArray.length - 4],
-                shapePointArray[shapePointArray.length - 3],
-                distance);
+            var total = points.length;
+            for (var i=1; i<total; i++) {
+                var last = points[i-1];
+                var cur = points[i];
+                var next = i<points.length-1 ? points[i+1] : null;
 
-            roadVerNegArr.push(endVertexPoints.outerX);
-            roadVerNegArr.push(endVertexPoints.outerY);
-            roadVerPosArr.push(endVertexPoints.innerX);
-            roadVerPosArr.push(endVertexPoints.innerY);
+                direction(lineA, cur, last);
+                if (!curNormal)  {
+                    curNormal = [0, 0];
+                    normal(curNormal, lineA)
+                }
 
-            for (i = roadVerNegArr.length - 2; i >= 0; i -= 2) {
-                roadVerPosArr.push(roadVerNegArr[i]);
-                roadVerPosArr.push(roadVerNegArr[i + 1]);
+                if (i === 1) //add initial normals
+                    addNext(out, curNormal, 1);
+
+                if (!next) { //no miter, simple segment
+                    normal(curNormal, lineA);//reset normal
+                    addNext(out, curNormal, 1)
+                } else { //miter with last
+                    //get unit dir of next line
+                    direction(lineB, next, cur);
+
+                    //stores tangent & miter
+                    var miterLen = computeMiter(tangent, miter, lineA, lineB, 1);
+                    addNext(out, miter, miterLen)
+                }
             }
 
-            return roadVerPosArr
+            //if the polyline is a closed loop, clean up the last normal
+            if (points.length > 2 && closed) {
+                var last2 = points[total-2];
+                var cur2 = points[0];
+                var next2 = points[1];
+
+                direction(lineA, cur2, last2);
+                direction(lineB, next2, cur2);
+                normal(curNormal, lineA);
+
+                var miterLen2 = computeMiter(tangent, miter, lineA, lineB, 1);
+                out[0][0] = miter.slice();
+                out[total-1][0] = miter.slice();
+                out[0][1] = miterLen2;
+                out[total-1][1] = miterLen2;
+                out.pop()
+            }
+
+            return out
         }
+        
     }
 
 });

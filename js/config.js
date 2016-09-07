@@ -21,6 +21,8 @@ var require = {
         OrbitControls: 'three/OrbitControls',
         threePlugin: 'three/threePlugin',
 
+        glm: 'gl-matrix-min',
+
         jquery: 'jquery.min',
         vue: 'vue.min',
         bootstrap: 'bootstrap.min',
