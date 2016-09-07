@@ -5,7 +5,7 @@ define(['glm'], function (glm) {
     'use strict';
 
     var v2 = glm.vec2;
-    var tmp = [0, 0];
+
     var lineA = [0, 0];
     var lineB = [0, 0];
     var tangent = [0, 0];
@@ -13,6 +13,7 @@ define(['glm'], function (glm) {
 
     function computeMiter(tangent, miter, lineA, lineB, halfThick){
         // get tangent line
+        var tmp = [0, 0];
         v2.add(tangent, lineA, lineB);
         v2.normalize(tangent, tangent);
 
@@ -44,6 +45,10 @@ define(['glm'], function (glm) {
 
     return {
         getNormals : function(points, closed){
+            var lineA = [0, 0];
+            var lineB = [0, 0];
+            var tangent = [0, 0];
+            var miter = [0, 0];
             var curNormal = null;
             var out = [];
             if (closed) {
@@ -99,7 +104,7 @@ define(['glm'], function (glm) {
 
             return out
         }
-        
+
     }
 
 });
