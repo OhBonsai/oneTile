@@ -1,9 +1,9 @@
 /**
  * Created by Bonsai on 16-8-17.
  */
-define( ['three', './container'], function (THREE, container) {
+define( ['three'], function (THREE) {
     var camera = new THREE.PerspectiveCamera( 70, 1, 1, 100000 );
-    camera.position.z = 10000;
+    camera.position.z = 2000;
 
     var updateSize = function () {
         camera.aspect = window.innerWidth / window.innerHeight;
