@@ -3,13 +3,16 @@
  */
 define([
     './defined',
+    './defaulted',
     './DevelopError'
 ], function(
     defined,
+    defaulted,
     DevelopError
 ){
     return {
         defined: defined,
-        DevelopError: DevelopError,
+        defaulted: defaulted,
+        DevelopError: DevelopError
     }
 });
