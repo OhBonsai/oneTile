@@ -6,9 +6,9 @@ define(['three'],function(THREE){
 
     var LineShader = function(opt){
         opt = opt || {};
-        var thickness = typeof opt.thickness === 'number' ? opt.thickness : 0.1;
+        var thickness = typeof opt.thickness === 'number' ? opt.thickness : 10;
         var opacity = typeof opt.opacity === 'number' ? opt.opacity : 1.0;
-        var diffuse = typeof opt.diffuse !== 'null' ? opt.diffuse : 0xffffff;
+        var diffuse = typeof opt.diffuse !== 'null' ? opt.diffuse : 0xcccccc;
 
         delete opt.thickness;
         delete opt.opacity;
