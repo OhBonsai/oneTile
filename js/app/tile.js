@@ -45,6 +45,8 @@ function(SeaLevelPainter,
         side: THREE.DoubleSide
     }));
 
+    var domeMat =  new THREE.ShaderMaterial(shader.env.skyDomeShader);
+
     var time = 0.0;
 
     var tile = {
@@ -116,6 +118,16 @@ function(SeaLevelPainter,
 
             var mesh2 = new THREE.Mesh(boxGeo, graMat);
             scene.add(mesh2);
+
+
+            // add skydome
+
+            var geometry = new THREE.SphereGeometry(30000, 200, 140);
+            var skyBox = new THREE.Mesh(geometry, domeMat);
+            skyBox.scale.set(-1, 1, 1);
+            skyBox.eulerOrder = 'XZY';
+            skyBox.renderDepth = 1000.0;
+            scene.add(skyBox);
 
         },
 
