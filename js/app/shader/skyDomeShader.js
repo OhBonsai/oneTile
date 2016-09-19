@@ -4,7 +4,7 @@
 define(['three'],function(THREE){
     return {
         uniforms : {
-            texture: { type: 't', value: THREE.ImageUtils.loadTexture('./textures/universe.jpg') }
+            texture: { type: 't', value: THREE.TextureLoader('./textures/universe.jpg') }
         },
         vertexShader: function(){/*
             varying vec2 vUV;
