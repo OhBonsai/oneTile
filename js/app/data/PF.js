@@ -4,9 +4,9 @@
 define(['when', 'jquery'], function(when, $){
     "use strict";
 
-    var ShapePointPromiseFactory = function(){};
+    var PromiseFactory = function(){};
 
-    ShapePointPromiseFactory.prototype.createPromise = function(x, y){
+    PromiseFactory.prototype.createShapePointPromise = function(x, y){
         var defered = when.defer();
         var url = 'http://192.168.10.13:8989/draw/CHN/X/Y'.replace('X', x).replace('Y', y);
         url = 'js/app/data/oneTile.json';
@@ -16,6 +16,16 @@ define(['when', 'jquery'], function(when, $){
         return defered.promise
     };
 
-    return new ShapePointPromiseFactory()
+    PromiseFactory.prototype.createBuildPromise = function(x, y){
+        var defered = when.defer();
+        var url = 'js/app/data/build.json';
+        $.getJSON(url, function(data){
+            defered.resolve(data);
+        });
+        return defered.promise
+    };
+
+
+    return new PromiseFactory()
 });
 
