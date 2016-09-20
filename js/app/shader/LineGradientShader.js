@@ -1,7 +1,7 @@
 /**
  * Created by Bonsai on 16-9-9.
  */
-define(['three', '../util/__init__'],function(THREE, U) {
+define(['three', '../util/util'],function(THREE, U) {
     'use strict';
 
     var LineGradientShader = function(opt){
