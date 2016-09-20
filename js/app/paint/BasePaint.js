@@ -1,7 +1,7 @@
 /**
  * Created by Bonsai on 16-8-16.
  */
-define(['../util/__init__'],function(U){
+define(['../util/util'],function(U){
     'use strict';
     
     var BasePaint = function(){};
