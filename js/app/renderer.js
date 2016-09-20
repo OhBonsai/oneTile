@@ -5,7 +5,7 @@ define(['three', './container'], function (THREE, container) {
     'use strict';
 
     container.innerHTML = "";
-    var renderer = new THREE.WebGLRenderer( { clearColor: 0xffffff } );
+    var renderer = new THREE.WebGLRenderer( { antialias: true });
     renderer.sortObjects = false;
     renderer.autoClear = false;
     container.appendChild( renderer.domElement );
