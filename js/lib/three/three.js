@@ -5,6 +5,7 @@ define([
     'threeCore',
     'FirstPersonControls',
     'OrbitControls',
+    'TrackballControls',
     'threePlugin'
     ], function(threeCore){
     return threeCore;

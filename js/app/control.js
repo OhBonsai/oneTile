@@ -4,6 +4,6 @@
 define( ["three", "../app/camera"], function( THREE, camera) {
     'use strict';
     
-    var control = new THREE.OrbitControls(camera);
+    var control = new THREE.TrackballControls(camera);
     return control;
 } );
