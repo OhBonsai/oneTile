@@ -14,7 +14,6 @@ define(['when', 'jquery'], function(when, $){
             defered.resolve(data.link_shape_points);
         });
         return defered.promise
-
     };
 
     return new ShapePointPromiseFactory()
