@@ -85,7 +85,7 @@ function(SeaLevelPainter,
         init: function(){
             var slp = new SeaLevelPainter();
             var llp = new LandLevelPainter();
-            scene.add(slp.draw());
+            //scene.add(slp.draw());
             scene.add(llp.draw());
             
             var tileGroup = new THREE.Object3D();
