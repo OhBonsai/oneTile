@@ -91,8 +91,8 @@ define(['three', '../core/math'],function(THREE, MATH){
                 indexArray[c++] = i+1;
                 indexArray[c++] = i+3;
 
-                attrPosition.setXYZ(index++, point[0], point[1], 2.0);
-                attrPosition.setXYZ(index++, point[0], point[1], 2.0);
+                attrPosition.setXYZ(index++, point[0], point[1], 5.0);
+                attrPosition.setXYZ(index++, point[0], point[1], 5.0);
 
                 if (attrDistance){
                     var d = pointIndex / (list.length - 1);
