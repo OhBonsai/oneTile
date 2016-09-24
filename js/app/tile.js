@@ -15,9 +15,9 @@ define(['./paint/SeaLevelPainter',
         './scene',
         './clock',
         './container',
-        'dat',
-        'three',
-        'jquery'],
+        './gui',
+        'three'
+        ],
 function(SeaLevelPainter,
          LandLevelPainter,
          LineGeometry,
@@ -32,9 +32,8 @@ function(SeaLevelPainter,
          scene,
          clock,
          container,
-         dat,
-         THREE,
-         $){
+         gui,
+         THREE){
     'use strict';
 
     // material
@@ -76,7 +75,7 @@ function(SeaLevelPainter,
     scene.add( lights[ 2 ] );
 
 
-    var time = 0.0;
+    // var time = 0.0;
 
     var tile = {
         init: function(){
@@ -87,9 +86,10 @@ function(SeaLevelPainter,
             scene.add(llp.draw());
             scene.add(skyBox);
 
-            // Links
-            var tileGroup = new THREE.Object3D();
-            scene.add(tileGroup);
+            // Link
+            var linkGroup = new THREE.Object3D();
+            linkGroup.name = 'links';
+            scene.add(linkGroup);
             var oneTileLinksPromise = promiseFactory.createLinkPromise(13494, 7137);
             oneTileLinksPromise.then(function(links){
                 for (var linkId in links) {
@@ -105,16 +105,39 @@ function(SeaLevelPainter,
                     var linkGeo = new LineGeometry(shapePath, {distances: false, closed: false});
                     var linkMesh = new THREE.Mesh(linkGeo, mat);
                     linkMesh.name = linkId;
-                    tileGroup.add(linkMesh);
+                    linkGroup.add(linkMesh);
                 }
 
             });
-            tileGroup.translateX(-1000);
-            tileGroup.translateY(-1000);
+            linkGroup.translateX(-1000);
+            linkGroup.translateY(-1000);
+            
+            
+            //Node
+            var nodeGroup = new THREE.Object3D();
+            nodeGroup.name = 'nodes';
+            scene.add(nodeGroup);
+            var oneTileNodesPromise = promiseFactory.createNodePromise(13494, 7137);
+            oneTileNodesPromise.then(function(nodes){
+                for(var nodeId in nodes) {
+                    var nodePoint = nodes[nodeId];
+                    var nodeGeo = new THREE.SphereBufferGeometry( 1, 5, 5 );
+                    var material = new THREE.MeshBasicMaterial( {color: 0x000000} );
+                    var nodeMesh = new THREE.Mesh( nodeGeo, material );
+                    nodeMesh.translateX(nodePoint[0]*2000/4096);
+                    nodeMesh.translateY(nodePoint[1]*2000/4096);
+                    nodeMesh.translateZ(5);
+                    nodeMesh.name = nodeId;
+                    nodeGroup.add( nodeMesh );
+                }
+            });
+            nodeGroup.translateX(-1000);
+            nodeGroup.translateY(-1000);
 
 
             //Build
             var buildGroup = new THREE.Object3D;
+            buildGroup.name = 'builds';
             var oneTileBuildPromise = promiseFactory.createBuildPromise(13494, 7137);
             oneTileBuildPromise.then(function(builds){
                 builds.forEach(function(build){
@@ -134,6 +157,7 @@ function(SeaLevelPainter,
             buildGroup.translateX(-1000);
             buildGroup.translateY(-1000);
             scene.add(buildGroup);
+            buildGroup.visible = false;
         },
 
         animate: function(){
