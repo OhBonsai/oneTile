@@ -121,7 +121,7 @@ function(SeaLevelPainter,
             oneTileNodesPromise.then(function(nodes){
                 for(var nodeId in nodes) {
                     var nodePoint = nodes[nodeId];
-                    var nodeGeo = new THREE.SphereBufferGeometry( 1, 5, 5 );
+                    var nodeGeo = new THREE.SphereBufferGeometry( 5, 5, 5 );
                     var material = new THREE.MeshBasicMaterial( {color: 0x000000} );
                     var nodeMesh = new THREE.Mesh( nodeGeo, material );
                     nodeMesh.translateX(nodePoint[0]*2000/4096);
@@ -157,7 +157,6 @@ function(SeaLevelPainter,
             buildGroup.translateX(-1000);
             buildGroup.translateY(-1000);
             scene.add(buildGroup);
-            buildGroup.visible = false;
         },
 
         animate: function(){

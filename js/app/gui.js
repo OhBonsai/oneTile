@@ -22,7 +22,7 @@ define(['dat', './scene'], function (dat, scene) {
     };
     var featuresFolder = gui.addFolder('Features');
     for (var feature in features){
-        parameters[feature] =  function(){};
+        parameters[feature] =  true;
         featuresFolder.add(parameters, feature)
             .name(feature)
             .onChange(function (value){
