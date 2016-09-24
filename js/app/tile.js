@@ -37,13 +37,12 @@ function(SeaLevelPainter,
          $){
     'use strict';
 
-
-
     // material
     var mat = new THREE.ShaderMaterial(shader.line.LineShader({
         side: THREE.DoubleSide,
-        diffuse: 0x5cd7ff,
-        thickness: 20
+        // diffuse: 0x5cd7ff,
+        diffuse: 0xffffff,
+        thickness: 2
     }));
 
     var dashMat = new THREE.ShaderMaterial(shader.line.LineDashShader({
@@ -54,10 +53,9 @@ function(SeaLevelPainter,
         side: THREE.DoubleSide
     }));
 
-    var loader = new THREE.TextureLoader();
-
-    var buildMat = new THREE.MeshBasicMaterial({
-        map: loader.load('textures/building-texture1.jpg'), overdraw:0.5});
+    // var loader = new THREE.TextureLoader();
+    // var buildMat = new THREE.MeshBasicMaterial({
+    //     map: loader.load('textures/building-texture1.jpg'), overdraw:0.5});
 
 
     // light
@@ -78,21 +76,24 @@ function(SeaLevelPainter,
     scene.add( lights[ 2 ] );
 
 
-
     var time = 0.0;
 
     var tile = {
         init: function(){
+            // Background
             var slp = new SeaLevelPainter();
             var llp = new LandLevelPainter();
-            scene.add(slp.draw());
+            //scene.add(slp.draw());
             scene.add(llp.draw());
-            
+            scene.add(skyBox);
+
+            // Links
             var tileGroup = new THREE.Object3D();
             scene.add(tileGroup);
-            var oneTileShapePointsPromise = promiseFactory.createShapePointPromise(13494, 6866);
-            oneTileShapePointsPromise.then(function(shapePoints){
-                $.each(shapePoints,function(linkId, linkShapePoints){
+            var oneTileLinksPromise = promiseFactory.createLinkPromise(13494, 7137);
+            oneTileLinksPromise.then(function(links){
+                for (var linkId in links) {
+                    var linkShapePoints = links[linkId];
                     var shapePath = [];
                     for (var i=0; i<linkShapePoints.length; i+=2){
                         shapePath.push([
@@ -102,19 +103,19 @@ function(SeaLevelPainter,
                     }
 
                     var linkGeo = new LineGeometry(shapePath, {distances: false, closed: false});
-                    tileGroup.add(new THREE.Mesh(linkGeo, mat));
-                });
+                    var linkMesh = new THREE.Mesh(linkGeo, mat);
+                    linkMesh.name = linkId;
+                    tileGroup.add(linkMesh);
+                }
+
             });
             tileGroup.translateX(-1000);
             tileGroup.translateY(-1000);
 
 
-            
-            scene.add(skyBox);
-
-            //BUILD
+            //Build
             var buildGroup = new THREE.Object3D;
-            var oneTileBuildPromise = promiseFactory.createBuildPromise(13494, 6866);
+            var oneTileBuildPromise = promiseFactory.createBuildPromise(13494, 7137);
             oneTileBuildPromise.then(function(builds){
                 builds.forEach(function(build){
                     var buildGeo = new Builder1Geometry(build.pointList, build.height, build.triList);
@@ -138,8 +139,7 @@ function(SeaLevelPainter,
         animate: function(){
             window.requestAnimationFrame( tile.animate );
             control.update();
-            time += clock.getDelta();
-
+            // time += clock.getDelta();
             // dashMat.uniforms.dashDistance.value = (Math.sin(time) / 2 + 0.5) * 0.5;
             // dashMat.uniforms.dashSteps.value = (Math.sin(Math.cos(time)) / 2 + 0.5) * 24;
             renderer.render(scene, camera);
