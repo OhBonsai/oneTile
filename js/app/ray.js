@@ -5,6 +5,6 @@ define(['three'], function(THREE){
     'use strict';
 
     var ray = new THREE.Raycaster();
-    ray.linePrecision = 1;
+    ray.linePrecision = 100;
     return ray
 });

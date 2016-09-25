@@ -18,6 +18,7 @@ define(['./paint/SeaLevelPainter',
         './clock',
         './container',
         './gui',
+        './event/objectMarker',
         'three'
         ],
 function(SeaLevelPainter,
@@ -37,6 +38,7 @@ function(SeaLevelPainter,
          clock,
          container,
          gui,
+         objectMarker,
          THREE){
     'use strict';
 
