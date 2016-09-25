@@ -14,8 +14,8 @@ define([], function(){
         FIS : {
             Link : true,
             Node : false,
-            Build : true,
-            Name: false
+            Build : false,
+            Name: true
         }
     };
 
