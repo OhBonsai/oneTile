@@ -39,6 +39,10 @@ define(['when', 'jquery'], function(when, $){
         return createPromise('js/app/data/node.json')
     };
 
+    PromiseFactory.prototype.createNamePromise = function(x, y){
+        return createPromise('js/app/data/name.json')
+    };
+
 
     return new PromiseFactory()
 });

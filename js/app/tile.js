@@ -164,15 +164,20 @@ function(SeaLevelPainter,
             buildGroup.visible = SETTING.FIS.Build;
 
 
-
-
             //Name
             var nameGroup = new THREE.Object3D();
             nameGroup.name = 'names';
             scene.add(nameGroup);
-
-            nameGroup.add(new NameSprite('天才是我').getLabel());
-            nameGroup.position.set(1000,1000,12);
+            var oneTileNamePromise = promiseFactory.createNamePromise(13494, 7137);
+            oneTileNamePromise.then(function(names){
+                names.forEach(function (name){
+                    var nameSprite = new NameSprite(name.name).getLabel();
+                    nameSprite.position.set(name.pos[0], name.pos[1], 5);
+                    nameGroup.add(nameSprite);
+                })
+            });
+            nameGroup.translateX(-2048);
+            nameGroup.translateY(-2048);
             nameGroup.visible = SETTING.FIS.Name;
 
         },
