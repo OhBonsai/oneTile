@@ -8,6 +8,14 @@ define([], function(){
         /** road shape painter **/
         RSP : {
             STANDARD_ROAD : 1
+        },
+
+        /** features init status **/
+        FIS : {
+            Link : true,
+            Node : false,
+            Build : true,
+            Name: false
         }
     };
 
