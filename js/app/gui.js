@@ -1,7 +1,7 @@
 /**
  * Created by Bonsai on 16-9-8.
  */
-define(['dat', './scene'], function (dat, scene) {
+define(['dat', './scene', './core/setting'], function (dat, scene, SETTING) {
     "use strict";
 
     var gui = new dat.GUI();
@@ -18,16 +18,17 @@ define(['dat', './scene'], function (dat, scene) {
     var features = {
         Link : 'links',
         Node : 'nodes',
-        Build : 'builds'
+        Build : 'builds',
+        Name: 'names'
     };
+
     var featuresFolder = gui.addFolder('Features');
     for (var feature in features){
-        parameters[feature] =  true;
+        parameters[feature] =  SETTING.FIS[feature];
         featuresFolder.add(parameters, feature)
             .name(feature)
             .onChange(function (value){
-                scene.getObjectByName(features[this.property]).visible =
-                    !scene.getObjectByName(features[this.property]).visible;
+                scene.getObjectByName(features[this.property]).visible = !!value;
             })
     }
 

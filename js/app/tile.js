@@ -7,8 +7,10 @@ define(['./paint/SeaLevelPainter',
         './paint/Builder1Geometry',
         // './paint/Builder1Material',
         './paint/skyBox',
+        './paint/NameSprite',
         './shader/shader',
         './data/PF',
+        './core/setting',
         './camera',
         './control',
         './renderer',
@@ -24,8 +26,10 @@ function(SeaLevelPainter,
          Builder1Geometry,
          // Builder1Material,
          skyBox,
+         NameSprite,
          shader,
          promiseFactory,
+         SETTING,
          camera,
          control,
          renderer,
@@ -111,6 +115,7 @@ function(SeaLevelPainter,
             });
             linkGroup.translateX(-2048);
             linkGroup.translateY(-2048);
+            linkGroup.visible = SETTING.FIS.Link;
 
 
             //Node
@@ -133,11 +138,13 @@ function(SeaLevelPainter,
             });
             nodeGroup.translateX(-2048);
             nodeGroup.translateY(-2048);
+            nodeGroup.visible = SETTING.FIS.Node;
 
 
             //Build
-            var buildGroup = new THREE.Object3D;
+            var buildGroup = new THREE.Object3D();
             buildGroup.name = 'builds';
+            scene.add(buildGroup);
             var oneTileBuildPromise = promiseFactory.createBuildPromise(13494, 7137);
             oneTileBuildPromise.then(function (builds) {
                 builds.forEach(function (build) {
@@ -148,15 +155,26 @@ function(SeaLevelPainter,
                         side: THREE.DoubleSide,
                         shading: THREE.FlatShading
                     }));
-
                     // var buildMesh = new THREE.Mesh(buildGeo, buildMat);
-
                     buildGroup.add(buildMesh);
                 })
             });
             buildGroup.translateX(-2048);
             buildGroup.translateY(-2048);
-            scene.add(buildGroup);
+            buildGroup.visible = SETTING.FIS.Build;
+
+
+
+
+            //Name
+            var nameGroup = new THREE.Object3D();
+            nameGroup.name = 'names';
+            scene.add(nameGroup);
+
+            nameGroup.add(new NameSprite('天才是我').getLabel());
+            nameGroup.position.set(1000,1000,12);
+            nameGroup.visible = SETTING.FIS.Name;
+
         },
 
         animate: function () {
