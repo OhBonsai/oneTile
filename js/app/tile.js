@@ -97,8 +97,8 @@ function(SeaLevelPainter,
                     var shapePath = [];
                     for (var i = 0; i < linkShapePoints.length; i += 2) {
                         shapePath.push([
-                            linkShapePoints[i] * 2000 / 4096,
-                            linkShapePoints[i + 1] * 2000 / 4096
+                            linkShapePoints[i],
+                            linkShapePoints[i + 1]
                         ]);
                     }
 
@@ -109,8 +109,8 @@ function(SeaLevelPainter,
                 }
 
             });
-            linkGroup.translateX(-1000);
-            linkGroup.translateY(-1000);
+            linkGroup.translateX(-2048);
+            linkGroup.translateY(-2048);
 
 
             //Node
@@ -124,15 +124,15 @@ function(SeaLevelPainter,
                     var nodeGeo = new THREE.SphereBufferGeometry(5, 5, 5);
                     var material = new THREE.MeshBasicMaterial({color: 0x000000});
                     var nodeMesh = new THREE.Mesh(nodeGeo, material);
-                    nodeMesh.translateX(nodePoint[0] * 2000 / 4096);
-                    nodeMesh.translateY(nodePoint[1] * 2000 / 4096);
+                    nodeMesh.translateX(nodePoint[0]);
+                    nodeMesh.translateY(nodePoint[1]);
                     nodeMesh.translateZ(5);
                     nodeMesh.name = nodeId;
                     nodeGroup.add(nodeMesh);
                 }
             });
-            nodeGroup.translateX(-1000);
-            nodeGroup.translateY(-1000);
+            nodeGroup.translateX(-2048);
+            nodeGroup.translateY(-2048);
 
 
             //Build
@@ -154,8 +154,8 @@ function(SeaLevelPainter,
                     buildGroup.add(buildMesh);
                 })
             });
-            buildGroup.translateX(-1000);
-            buildGroup.translateY(-1000);
+            buildGroup.translateX(-2048);
+            buildGroup.translateY(-2048);
             scene.add(buildGroup);
         },
 
