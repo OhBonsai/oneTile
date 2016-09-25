@@ -15,24 +15,19 @@ define(['dat', './scene', './core/setting'], function (dat, scene, SETTING) {
         });
 
 
-    var features = {
-        Link : 'links',
-        Node : 'nodes',
-        Build : 'builds',
-        Name: 'names'
-    };
+    var features = ['Links', 'Nodes', 'Builds', 'Names'];
 
     var featuresFolder = gui.addFolder('Features');
-    for (var feature in features){
+    features.forEach(function(feature){
         parameters[feature] =  SETTING.FIS[feature];
         featuresFolder.add(parameters, feature)
             .name(feature)
             .onChange(function (value){
-                scene.getObjectByName(features[this.property]).visible = !!value;
+                scene.getObjectByName(SETTING.GN[this.property]).visible = !!value;
             })
-    }
+    });
 
-    // gui.open();
-
+    gui.open();
+    
     return gui
 });

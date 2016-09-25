@@ -92,7 +92,7 @@ function(SeaLevelPainter,
 
             // Link
             var linkGroup = new THREE.Object3D();
-            linkGroup.name = 'links';
+            linkGroup.name = SETTING.GN.Links;
             scene.add(linkGroup);
             var oneTileLinksPromise = promiseFactory.createLinkPromise(13494, 7137);
             oneTileLinksPromise.then(function (links) {
@@ -109,19 +109,19 @@ function(SeaLevelPainter,
                     var linkGeo = new LineGeometry(shapePath, {distances: false, closed: false});
                     var linkMesh = new THREE.Mesh(linkGeo, mat);
                     linkMesh.name = linkId;
-                    linkMesh.bonsaiType = 'Link';
+                    linkMesh.bonsaiType = SETTING.BTP.Link;
                     linkGroup.add(linkMesh);
                 }
 
             });
             linkGroup.translateX(-2048);
             linkGroup.translateY(-2048);
-            linkGroup.visible = SETTING.FIS.Link;
+            linkGroup.visible = SETTING.FIS.Links;
 
 
             //Node
             var nodeGroup = new THREE.Object3D();
-            nodeGroup.name = 'nodes';
+            nodeGroup.name = SETTING.GN.Nodes;
             scene.add(nodeGroup);
             var oneTileNodesPromise = promiseFactory.createNodePromise(13494, 7137);
             oneTileNodesPromise.then(function (nodes) {
@@ -134,18 +134,18 @@ function(SeaLevelPainter,
                     nodeMesh.translateY(nodePoint[1]);
                     nodeMesh.translateZ(5);
                     nodeMesh.name = nodeId;
-                    nodeMesh.bonsaiType = 'node';
+                    nodeMesh.bonsaiType = SETTING.BTP.Node;
                     nodeGroup.add(nodeMesh);
                 }
             });
             nodeGroup.translateX(-2048);
             nodeGroup.translateY(-2048);
-            nodeGroup.visible = SETTING.FIS.Node;
+            nodeGroup.visible = SETTING.FIS.Nodes;
 
 
             //Build
             var buildGroup = new THREE.Object3D();
-            buildGroup.name = 'builds';
+            buildGroup.name = SETTING.GN.Builds;
             scene.add(buildGroup);
             var oneTileBuildPromise = promiseFactory.createBuildPromise(13494, 7137);
             oneTileBuildPromise.then(function (builds) {
@@ -158,31 +158,31 @@ function(SeaLevelPainter,
                         shading: THREE.FlatShading
                     }));
                     // var buildMesh = new THREE.Mesh(buildGeo, buildMat);
-                    buildMesh.bonsaiType = 'Build';
+                    buildMesh.bonsaiType = SETTING.BTP.Build;
                     buildGroup.add(buildMesh);
                 })
             });
             buildGroup.translateX(-2048);
             buildGroup.translateY(-2048);
-            buildGroup.visible = SETTING.FIS.Build;
+            buildGroup.visible = SETTING.FIS.Builds;
 
 
             //Name
             var nameGroup = new THREE.Object3D();
-            nameGroup.name = 'names';
+            nameGroup.name = SETTING.GN.Names;
             scene.add(nameGroup);
             var oneTileNamePromise = promiseFactory.createNamePromise(13494, 7137);
             oneTileNamePromise.then(function(names){
                 names.forEach(function (name){
                     var nameSprite = new NameSprite(name.name).getLabel();
                     nameSprite.position.set(name.pos[0], name.pos[1], 5);
-                    nameSprite.bonsaiType = 'Name';
+                    nameSprite.bonsaiType = SETTING.BTP.Name;
                     nameGroup.add(nameSprite);
                 })
             });
             nameGroup.translateX(-2048);
             nameGroup.translateY(-2048);
-            nameGroup.visible = SETTING.FIS.Name;
+            nameGroup.visible = SETTING.FIS.Names;
 
         },
 
