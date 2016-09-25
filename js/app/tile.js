@@ -109,6 +109,7 @@ function(SeaLevelPainter,
                     var linkGeo = new LineGeometry(shapePath, {distances: false, closed: false});
                     var linkMesh = new THREE.Mesh(linkGeo, mat);
                     linkMesh.name = linkId;
+                    linkMesh.bonsaiType = 'Link';
                     linkGroup.add(linkMesh);
                 }
 
@@ -133,6 +134,7 @@ function(SeaLevelPainter,
                     nodeMesh.translateY(nodePoint[1]);
                     nodeMesh.translateZ(5);
                     nodeMesh.name = nodeId;
+                    nodeMesh.bonsaiType = 'node';
                     nodeGroup.add(nodeMesh);
                 }
             });
@@ -148,7 +150,7 @@ function(SeaLevelPainter,
             var oneTileBuildPromise = promiseFactory.createBuildPromise(13494, 7137);
             oneTileBuildPromise.then(function (builds) {
                 builds.forEach(function (build) {
-                    var buildGeo = new Builder1Geometry(build.pointList, build.height, build.triList);
+                    var buildGeo = new Builder1Geometry(build.pointList, build.height*4096/2000, build.triList);
                     var buildMesh = new THREE.Mesh(buildGeo, new THREE.MeshPhongMaterial({
                         color: 0x156289,
                         emissive: 0x072534,
@@ -156,6 +158,7 @@ function(SeaLevelPainter,
                         shading: THREE.FlatShading
                     }));
                     // var buildMesh = new THREE.Mesh(buildGeo, buildMat);
+                    buildMesh.bonsaiType = 'Build';
                     buildGroup.add(buildMesh);
                 })
             });
@@ -173,6 +176,7 @@ function(SeaLevelPainter,
                 names.forEach(function (name){
                     var nameSprite = new NameSprite(name.name).getLabel();
                     nameSprite.position.set(name.pos[0], name.pos[1], 5);
+                    nameSprite.bonsaiType = 'Name';
                     nameGroup.add(nameSprite);
                 })
             });
