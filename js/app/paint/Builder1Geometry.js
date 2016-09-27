@@ -58,7 +58,7 @@ define(['three','../util/util'], function(THREE, U){
                 indexArray[c++] = i+1;
                 indexArray[c++] = i+3;
 
-                attrPosition.setXYZ(index++, point[0], point[1], height*5+0.0);
+                attrPosition.setXYZ(index++, point[0], point[1], height+0.0);
                 attrPosition.setXYZ(index++, point[0], point[1], 2.0);
             });
 

@@ -13,8 +13,8 @@ define(['three', './BasePaint'], function(THREE, BasePaint){
         constructor: LandLevel,
         draw: function(option){
             var option =  option || {};
-            var width = option.width || 2000;
-            var length = option.length || 2000;
+            var width = option.width || 4096;
+            var length = option.length || 4096;
             var color = option.color || 0xeaeaea;
             var offsetX = option.offsetX || 0;
             var offsetY = option.offsetY || 0;

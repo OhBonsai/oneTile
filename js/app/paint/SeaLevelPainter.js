@@ -13,8 +13,8 @@ define(['three', './BasePaint'], function(THREE, BasePaint){
         constructor: SeaLevel,
         draw: function(option){
             var option =  option || {};
-            var width = option.width || 6000;
-            var length = option.length || 6000;
+            var width = option.width || 4096 * 3;
+            var length = option.length || 4096 * 3;
             var color = option.color || 0xa3ccff;
             var offsetX = option.offsetX || 0;
             var offsetY = option.offsetY || 0;
