@@ -109,13 +109,11 @@ function(SeaLevelPainter,
                     }
 
                     var linkGeo = new LineGeometry(shapePath, {distances: false, closed: false});
-                    var linkMesh = new LineMesh(linkGeo, mat);
+                    var linkMesh = new LineMesh(linkGeo, mat.clone());
                     linkMesh.name = linkId;
                     linkMesh.bonsaiType = SETTING.BTP.Link;
                     linkGroup.add(linkMesh);
                 }
-                //linkGroup.add(linkMesh);
-
             });
             linkGroup.translateX(-2048);
             linkGroup.translateY(-2048);

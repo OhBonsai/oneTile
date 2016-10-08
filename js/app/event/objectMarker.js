@@ -20,7 +20,6 @@ function(ray, camera, scene, renderer, THREE, U){
                 var intersects = ray.intersectObjects( scene.getObjectByName(groupName).children);
                 if (intersects.length > 0){
                     marker.mark(intersects[0].object);
-                    break
                 }
             }
         }
