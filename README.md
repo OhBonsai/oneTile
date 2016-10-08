@@ -15,5 +15,10 @@ You can use firefox to open, It defaulted support local file loading.
 git clone https://github.com/OhBonsai/oneTile.git
 cd oneTile
 python -m SimpleHTTPServer
+
+OR
+
+sudo npm install budo -g
+budo --live
 ```
 
