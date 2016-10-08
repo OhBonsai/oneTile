@@ -7,6 +7,10 @@ function(ray, camera, scene, renderer, THREE, U){
 
     var mouse = new THREE.Vector2();
 
+    var ascSort = function( a, b ) {
+        return a.distance - b.distance;
+    };
+
     var onMouseDbl = function(event, marker) {
         event.preventDefault();
 
@@ -14,45 +18,67 @@ function(ray, camera, scene, renderer, THREE, U){
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
         ray.setFromCamera( mouse, camera );
+        var allInterSects = [];
         for (var idx in marker._markableTypes){
             var groupName = marker._markableTypes[idx];
             if (scene.getObjectByName(groupName).visible){
                 var intersects = ray.intersectObjects( scene.getObjectByName(groupName).children);
                 if (intersects.length > 0){
-                    marker.mark(intersects[0].object);
+                    allInterSects.push(intersects[0])
                 }
             }
         }
+        allInterSects.sort(ascSort);
+        marker.mark(allInterSects[0].object);
     };
 
     // need keep a reference of mouse dbl handler, Or else, can't remove this listener
     var dirtyFunc = null;
 
-    var markLink = function(obj){
-        if (obj.bonsaiType !== 'Link') throw new U.DevelopError('mark a wrong bonsaiType obj');
-        obj.material.uniforms.diffuse.value = new THREE.Color(1,0,0);
-    };
+    // mark action dict 
+    var markActions = {
+        markLink: function (obj) {
+            if (obj.bonsaiType !== 'Link') throw new U.DevelopError('mark a wrong bonsaiType obj');
+            obj.material.uniforms.diffuse.value = new THREE.Color(1, 0, 0);
+        },
 
-    var unMarkLink = function(obj){
-        if (obj.bonsaiType !== 'Link') throw new U.DevelopError('mark a wrong bonsaiType obj');
-        obj.material.uniforms.diffuse.value = new THREE.Color(0,0,0);
-    };
+        unMarkLink: function (obj) {
+            if (obj.bonsaiType !== 'Link') throw new U.DevelopError('mark a wrong bonsaiType obj');
+            obj.material.uniforms.diffuse.value = new THREE.Color(1, 1, 1);
+        },
 
-    var markName = function(obj){
-        if (obj.bonsaiType !== 'Name') throw new U.DevelopError('mark a wrong bonsaiType obj');
-        obj.material.color = new THREE.Color(1,0,0);
-    };
+        markName: function (obj) {
+            if (obj.bonsaiType !== 'Name') throw new U.DevelopError('mark a wrong bonsaiType obj');
+            obj.material.color = new THREE.Color(1, 0, 0);
+        },
 
-    var markBuild = function(obj){
-        if (obj.bonsaiType !== 'Build') throw new U.DevelopError('mark a wrong bonsaiType obj');
-        obj.material.color = new THREE.Color(1,0,0);
-    };
+        unMarkName: function (obj) {
+            if (obj.bonsaiType !== 'Name') throw new U.DevelopError('mark a wrong bonsaiType obj');
+            obj.material.color = new THREE.Color(1, 1, 1);
+        },
 
-    var markNode = function(obj){
-        if (obj.bonsaiType !== 'Node') throw new U.DevelopError('mark a wrong bonsaiType obj');
-        obj.material.color = new THREE.Color(1,0,0);
-    };
+        markBuild: function (obj) {
+            if (obj.bonsaiType !== 'Build') throw new U.DevelopError('mark a wrong bonsaiType obj');
+            obj.material.color = new THREE.Color(1, 0, 0);
+        },
 
+        unMarkBuild: function (obj) {
+            if (obj.bonsaiType !== 'Build') throw new U.DevelopError('mark a wrong bonsaiType obj');
+            obj.material.color = new THREE.Color(0.08235, 0.38431, 0.53725); //0x156289
+        },
+
+        markNode: function (obj) {
+            if (obj.bonsaiType !== 'Node') throw new U.DevelopError('mark a wrong bonsaiType obj');
+            obj.material.color = new THREE.Color(1, 0, 0);
+        },
+
+        unMarkNode: function (obj) {
+            if (obj.bonsaiType !== 'Node') throw new U.DevelopError('mark a wrong bonsaiType obj');
+            obj.material.color = new THREE.Color(0, 0, 0);
+        }
+    };
+    
+    
     var ObjectMarker = function(isMultiMarker, markableTypes){
         this._activeObjectsNo = [];
         this._markableTypes = markableTypes || ['Links', 'Nodes', 'Builds', 'Names'];
@@ -136,25 +162,29 @@ function(ray, camera, scene, renderer, THREE, U){
             if(self._isMultitMarker){
                 self._activeObjectsNo.push(obj.id)
             }else{
+                if (self._activeObjectsNo.length > 0) {
+                    var lastMarkObj = scene.getObjectById(self._activeObjectsNo[0]);
+                    markActions['unMark'+ lastMarkObj.bonsaiType](lastMarkObj);
+                }
                 self._activeObjectsNo = [obj.id]
             }
 
             switch (obj.bonsaiType){
                 case 'Link':
                     self.notify('markLink', obj);
-                    markLink(obj);
+                    markActions.markLink(obj);
                     break;
                 case 'Build':
                     self.notify('markBuild', obj);
-                    markBuild(obj);
+                    markActions.markBuild(obj);
                     break;
                 case 'Name':
                     self.notify('markName', obj);
-                    markName(obj);
+                    markActions.markName(obj);
                     break;
                 case 'Node':
                     self.notify('markNode', obj);
-                    markNode(obj);
+                    markActions.markNode(obj);
                     break;
                 default:
                     // throw new U.DevelopError('why you can choose an unknown type object');
