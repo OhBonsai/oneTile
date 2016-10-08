@@ -4,8 +4,8 @@
 define(['./paint/SeaLevelPainter',
         './paint/LandLevelPainter',
         './paint/LineGeometry',
+        './paint/LineMesh',
         './paint/Builder1Geometry',
-        // './paint/Builder1Material',
         './paint/skyBox',
         './paint/NameSprite',
         './shader/shader',
@@ -24,8 +24,8 @@ define(['./paint/SeaLevelPainter',
 function(SeaLevelPainter,
          LandLevelPainter,
          LineGeometry,
+         LineMesh,
          Builder1Geometry,
-         // Builder1Material,
          skyBox,
          NameSprite,
          shader,
@@ -109,11 +109,12 @@ function(SeaLevelPainter,
                     }
 
                     var linkGeo = new LineGeometry(shapePath, {distances: false, closed: false});
-                    var linkMesh = new THREE.Mesh(linkGeo, mat);
+                    var linkMesh = new LineMesh(linkGeo, mat);
                     linkMesh.name = linkId;
                     linkMesh.bonsaiType = SETTING.BTP.Link;
                     linkGroup.add(linkMesh);
                 }
+                //linkGroup.add(linkMesh);
 
             });
             linkGroup.translateX(-2048);

@@ -49,6 +49,11 @@ function(ray, camera, scene, renderer, THREE, U){
         obj.material.color = new THREE.Color(1,0,0);
     };
 
+    var markNode = function(obj){
+        if (obj.bonsaiType !== 'Node') throw new U.DevelopError('mark a wrong bonsaiType obj');
+        obj.material.color = new THREE.Color(1,0,0);
+    };
+
     var ObjectMarker = function(isMultiMarker, markableTypes){
         this._activeObjectsNo = [];
         this._markableTypes = markableTypes || ['Links', 'Nodes', 'Builds', 'Names'];
@@ -150,6 +155,7 @@ function(ray, camera, scene, renderer, THREE, U){
                     break;
                 case 'Node':
                     self.notify('markNode', obj);
+                    markNode(obj);
                     break;
                 default:
                     // throw new U.DevelopError('why you can choose an unknown type object');
