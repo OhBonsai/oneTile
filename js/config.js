@@ -14,19 +14,16 @@ var require = {
         bootstrap: {deps: ['jquery']},
         when: {exports: 'when'},
         dat: {exports: 'dat'}
-
-        // underscore: {exports: "_"},
-        // backbone: {deps: ["jquery", "underscore", "json2"], exports: "Backbone"},
-        // marionette: {deps: ["backbone"], exports: "Marionette"}
     },
 
     paths: {
         three: 'three/three',
-        threeCore: 'three/three.min',
+        threeCore: 'three/three.src',
         FirstPersonControls: 'three/FirstPersonControls',
         OrbitControls: 'three/OrbitControls',
         TrackballControls: 'three/TrackballControls',
         threePlugin: 'three/threePlugin',
+        tween: 'Tween.min',
 
         glm: 'gl-matrix-min',
         dat: 'dat.gui.min',
@@ -35,9 +32,5 @@ var require = {
         vue: 'vue.min',
         bootstrap: 'bootstrap.min',
         when: 'when'
-        // backbone: 'backbone',
-        // json2: 'json2',
-        // marionette: 'backbone.marionette',
-        // underscore: 'underscore'
     }
 };
