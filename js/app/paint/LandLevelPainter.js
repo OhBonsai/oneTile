@@ -15,7 +15,7 @@ define(['three', './BasePaint'], function(THREE, BasePaint){
             var option =  option || {};
             var width = option.width || 4096;
             var length = option.length || 4096;
-            var color = option.color || 0xeaeaea;
+            var color = option.color || 0x557733;
             var offsetX = option.offsetX || 0;
             var offsetY = option.offsetY || 0;
 
@@ -27,9 +27,12 @@ define(['three', './BasePaint'], function(THREE, BasePaint){
             groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
             groundTexture.repeat.set( 25, 25 );
             groundTexture.anisotropy = 16;
-            var groundMaterial = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0x111111, map: groundTexture } );
+            var groundMaterial = new THREE.MeshPhongMaterial( {
+                color: 0xffffff, specular: 0x111111, map: groundTexture } );
 
-            var plane = new THREE.Mesh(geometry, groundMaterial);
+            // var plane = new THREE.Mesh(geometry, groundMaterial);
+            var plane = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
+                color: color}));
             plane.translateX(offsetX);
             plane.translateY(offsetY);
             plane.translateZ(2);
