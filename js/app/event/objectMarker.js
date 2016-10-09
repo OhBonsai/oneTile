@@ -1,14 +1,37 @@
 /**
  * Created by Bonsai on 16-9-24.
  */
-define(['../ray', '../camera', '../scene', '../renderer', 'three', '../util/util'],
-function(ray, camera, scene, renderer, THREE, U){
+define(['../ray', '../camera', '../scene', '../renderer', 'three', '../util/util', 'tween'],
+function(ray, camera, scene, renderer, THREE, U, TWEEN){
     'use strict';
 
     var mouse = new THREE.Vector2();
 
     var ascSort = function( a, b ) {
         return a.distance - b.distance;
+    };
+
+    var moveCamera = function (obj) {
+        var from = camera.position.clone();
+
+        var to = {
+            x: obj.position.x - 200,
+            y: obj.position.y,
+            z: 400
+        };
+        var tween = new TWEEN.Tween(from)
+            .to(to, 2000)
+            .easing(TWEEN.Easing.Linear.None)
+            .onUpdate(function () {
+                camera.position.set(this.x, this.y, this.z);
+                camera.lookAt(new THREE.Vector3(0, 0, 0));
+                // camera.lookAt(obj.position)
+            })
+            .onComplete(function () {
+                camera.lookAt(new THREE.Vector3(0, 0, 0));
+                // camera.lookAt(obj.position)
+            })
+            .start();
     };
 
     var onMouseDbl = function(event, marker) {
@@ -29,7 +52,10 @@ function(ray, camera, scene, renderer, THREE, U){
             }
         }
         allInterSects.sort(ascSort);
-        marker.mark(allInterSects[0].object);
+        if (U.defined(allInterSects[0])) {
+            marker.mark(allInterSects[0].object);
+            moveCamera(allInterSects[0].object);
+        }
     };
 
     // need keep a reference of mouse dbl handler, Or else, can't remove this listener
@@ -64,7 +90,7 @@ function(ray, camera, scene, renderer, THREE, U){
 
         unMarkBuild: function (obj) {
             if (obj.bonsaiType !== 'Build') throw new U.DevelopError('mark a wrong bonsaiType obj');
-            obj.material.color = new THREE.Color(0.08235, 0.38431, 0.53725); //0x156289
+            obj.material.color = new THREE.Color(0xB0DCD5); //0x156289
         },
 
         markNode: function (obj) {
@@ -187,12 +213,9 @@ function(ray, camera, scene, renderer, THREE, U){
                     markActions.markNode(obj);
                     break;
                 default:
-                    // throw new U.DevelopError('why you can choose an unknown type object');
+                    throw new U.DevelopError('why you can choose an unknown type object');
             }
-
         }
-
-
     });
     
     return new ObjectMarker();

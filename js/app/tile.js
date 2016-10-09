@@ -5,7 +5,7 @@ define(['./paint/SeaLevelPainter',
         './paint/LandLevelPainter',
         './paint/LineGeometry',
         './paint/LineMesh',
-        './paint/Builder1Geometry',
+        './paint/BuildingGeometry',
         './paint/skyBox',
         './paint/NameSprite',
         './shader/shader',
@@ -19,13 +19,14 @@ define(['./paint/SeaLevelPainter',
         './container',
         './gui',
         './event/objectMarker',
-        'three'
+        'three',
+        'tween'
         ],
 function(SeaLevelPainter,
          LandLevelPainter,
          LineGeometry,
          LineMesh,
-         Builder1Geometry,
+         BuildingGeometry,
          skyBox,
          NameSprite,
          shader,
@@ -39,7 +40,8 @@ function(SeaLevelPainter,
          container,
          gui,
          objectMarker,
-         THREE){
+         THREE,
+         TWEEN){
     'use strict';
 
     // material
@@ -62,6 +64,12 @@ function(SeaLevelPainter,
     // var buildMat = new THREE.MeshBasicMaterial({
     //     map: loader.load('textures/building-texture1.jpg'), overdraw:0.5});
 
+    var loader = new THREE.TextureLoader();
+    var groundTexture = loader.load( 'textures/building-texture1.jpg' );
+    groundTexture.wrapT = THREE.RepeatWrapping;
+    groundTexture.repeat.set( 1, 2 );
+    // groundTexture.anisotropy = 16;
+    var buildMat = new THREE.MeshPhongMaterial( { color: 0xffffff, specular: 0x111111, map: groundTexture } );
 
     // light
     var ambientLight = new THREE.AmbientLight(0x000000);
@@ -79,8 +87,7 @@ function(SeaLevelPainter,
     scene.add(lights[0]);
     scene.add(lights[1]);
     scene.add(lights[2]);
-
-
+    
     // var time = 0.0;
 
     var tile = {
@@ -91,6 +98,7 @@ function(SeaLevelPainter,
             //scene.add(slp.draw());
             scene.add(llp.draw());
             scene.add(skyBox);
+
 
             // Link
             var linkGroup = new THREE.Object3D();
@@ -151,9 +159,9 @@ function(SeaLevelPainter,
             var oneTileBuildPromise = promiseFactory.createBuildPromise(13494, 7137);
             oneTileBuildPromise.then(function (builds) {
                 builds.forEach(function (build) {
-                    var buildGeo = new Builder1Geometry(build.pointList, build.height*4096/2000, build.triList);
+                    var buildGeo = new BuildingGeometry(build.pointList, build.height*4096/2000, build.triList);
                     var buildMesh = new THREE.Mesh(buildGeo, new THREE.MeshPhongMaterial({
-                        color: 0x156289,
+                        color: 0xB0DCD5,
                         emissive: 0x072534,
                         side: THREE.DoubleSide,
                         shading: THREE.FlatShading
@@ -190,6 +198,7 @@ function(SeaLevelPainter,
         animate: function () {
             window.requestAnimationFrame(tile.animate);
             control.update();
+            TWEEN.update();
             // time += clock.getDelta();
             // dashMat.uniforms.dashDistance.value = (Math.sin(time) / 2 + 0.5) * 0.5;
             // dashMat.uniforms.dashSteps.value = (Math.sin(Math.cos(time)) / 2 + 0.5) * 24;
