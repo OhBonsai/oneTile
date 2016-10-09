@@ -22,6 +22,7 @@ define(['three','../util/util'], function(THREE, U){
         }
 
         this.addAttribute('position', new THREE.BufferAttribute(null, 3));
+        this.addAttribute('uv', new THREE.BufferAttribute(null, 2));
         this.setIndex(new THREE.BufferAttribute(null, 1));
 
         this.update(pointList, height, triList);
@@ -39,17 +40,20 @@ define(['three','../util/util'], function(THREE, U){
             var count = pointList.length * 2;
 
             var attrPosition = this.getAttribute('position');
+            var attrUV = this.getAttribute('uv');
             var attrIndex = this.getIndex();
 
+            attrUV.array = new Float32Array(count * 2);
             attrPosition.array = new Float32Array(count * 3);
             attrIndex.array = new Uint16Array(count*3 -6 + triList.length * 3);
 
             var index = 0;
+            var uvIndex = 0;
             var c = 0;
             var indexArray = attrIndex.array;
 
             // facade of building
-            pointList.forEach(function(point){
+            pointList.forEach(function(point, pIndex){
                 var i = index;
                 indexArray[c++] = i+0;
                 indexArray[c++] = i+1;
@@ -60,6 +64,9 @@ define(['three','../util/util'], function(THREE, U){
 
                 attrPosition.setXYZ(index++, point[0], point[1], height+0.0);
                 attrPosition.setXYZ(index++, point[0], point[1], 2.0);
+
+                attrUV.setXY(uvIndex++, pIndex%2+0.0, 0.0);
+                attrUV.setXY(uvIndex++, pIndex%2+0.0, 1.0);
             });
 
             c -= 6;
@@ -69,8 +76,6 @@ define(['three','../util/util'], function(THREE, U){
                 indexArray[c++] = tri[1]*2;
                 indexArray[c++] = tri[2]*2;
             });
-
-
 
         }
     });
